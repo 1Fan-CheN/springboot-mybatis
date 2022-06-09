@@ -1,6 +1,7 @@
 package com.example.mapper.provider;
 
 import com.example.entity.sqldo.BaseProductDo;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.jdbc.SQL;
 
 public class BaseProductProvider {

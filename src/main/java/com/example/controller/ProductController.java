@@ -24,7 +24,7 @@ public class ProductController {
     private ProductBaseService productBaseService;
 
     @PostMapping("create")
-    public BaseProductResp CreateModel(@RequestBody BaseProductVo baseProductVo) {
+    public BaseProductResp CreateProduct(@RequestBody BaseProductVo baseProductVo) {
         // 权限检查
         if (!permissionService.checkProductPermission(baseProductVo)) {
             return new BaseProductResp().fail(2, "no permission", null);
@@ -47,7 +47,7 @@ public class ProductController {
     }
 
     @PostMapping("offline")
-    public BaseProductResp OfflineModel(@RequestBody BaseProductVo baseProductVo) {
+    public BaseProductResp OfflineProduct(@RequestBody BaseProductVo baseProductVo) {
         // 权限检查
         if (permissionService.checkProductPermission(baseProductVo)) {
             return new BaseProductResp().fail(2, "no permission", null);
@@ -69,13 +69,30 @@ public class ProductController {
     }
 
     @PostMapping("delete")
-    public BaseProductResp DeleteModel(@RequestBody BaseProductVo baseProductVo) {
+    public BaseProductResp DeleteProduct(@RequestBody BaseProductVo baseProductVo) {
         if (permissionService.checkProductPermission(baseProductVo)) {
             return new BaseProductResp().fail(2, "no permission", null);
         }
         log.info("start delete product");
         return new BaseProductResp().success(null);
 
+    }
+
+    @PostMapping("test")
+    public BaseProductResp Test(@RequestBody BaseProductVo baseProductVo) {
+        log.info("start delete product");
+        return new BaseProductResp().success(baseProductVo.getStatus());
+    }
+
+    @PostMapping("testInsert")
+    public BaseProductResp TestInsert(@RequestBody BaseProductVo baseProductVo) {
+        log.info("start delete product");
+        try{
+            return new BaseProductResp().success(productBaseService.testInsert(baseProductVo));
+        } catch (Exception e) {
+            log.error(e.toString());
+            return new BaseProductResp().fail(-1, "db insert error", e.toString());
+        }
     }
 
 }

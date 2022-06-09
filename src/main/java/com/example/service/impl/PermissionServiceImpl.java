@@ -5,9 +5,11 @@ import com.example.entity.vo.BaseProductVo;
 import com.example.mapper.BaseProductMapper;
 import com.example.service.PermissionService;
 import com.example.utils.UserUtil;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
+@Service
 public class PermissionServiceImpl implements PermissionService {
 
     @Resource
@@ -31,7 +33,7 @@ public class PermissionServiceImpl implements PermissionService {
         }catch (Exception e){
 
         }
-        return false;
+        return true;
     }
 
 }

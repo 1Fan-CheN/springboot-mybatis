@@ -69,4 +69,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     public boolean hasUndeletedModules(int productId) {
         return baseProductMapper.countUndeletedModule(productId) != 0;
     }
+
+
+    @Override
+    public String testInsert(BaseProductVo baseProductVo){
+        BaseProductDo baseProductDo = new BaseProductDo();
+        baseProductDo.setName(baseProductVo.getName());
+        return baseProductMapper.testInsert(baseProductDo);
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.entity.sqldo.BaseProductDo;
 import com.example.entity.vo.BaseProductVo;
 
 import java.util.List;
@@ -15,5 +16,8 @@ public interface ProductBaseService {
     boolean productNameRepeat(String name);
 
     boolean hasUndeletedModules(int productId);
+
+
+    String testInsert(BaseProductVo baseProductVo);
 
 }

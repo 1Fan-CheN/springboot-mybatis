@@ -15,19 +15,19 @@ import com.example.entity.vo.BaseModuleResp;
 public class ModuleController {
 
     @PostMapping("create")
-    public BaseModuleResp CreateModel(@RequestBody BaseModuleVo request){
+    public BaseModuleResp CreateModule(@RequestBody BaseModuleVo request){
         log.info("testing...");
         return new BaseModuleResp().success("success");
     }
 
     @PostMapping("offline")
-    public BaseModuleResp OfflineModel(){
+    public BaseModuleResp OfflineModule(){
         log.info("testing222...");
         return null;
     }
 
     @PostMapping("delete")
-    public BaseModuleResp DeleteModel() {
+    public BaseModuleResp DeleteModule() {
         return null;
     }
 

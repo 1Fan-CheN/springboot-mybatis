@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
+@Mapper
 public interface BaseProductMapper {
 
     @SelectProvider(type = BaseProductProvider.class, method = "getIdList")
@@ -21,4 +22,8 @@ public interface BaseProductMapper {
     @Select("SELECT count(id) FROM model_module_table WHERE productId=#{productId} AND status != 2")
     int countUndeletedModule(@Param(value = "productId") int productId);
 
+
+    @Insert("INSERT INTO product_table(name) values(#{name})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    String testInsert(BaseProductDo baseProductDo);
 }
