@@ -1,80 +1,125 @@
 package com.example.service.impl;
 
+import com.example.dao.BaseProductDao;
 import com.example.entity.sqldo.BaseProductDo;
+import com.example.entity.vo.BaseProductInfoVo;
+import com.example.entity.vo.BaseProductResp;
 import com.example.entity.vo.BaseProductVo;
-import com.example.mapper.BaseProductMapper;
 import com.example.service.ProductBaseService;
-import com.example.utils.UserUtil;
+import com.example.utils.FormatUtil;
+import com.example.utils.TimeUtil;
+import com.example.utils.PermissionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Resource
-    private BaseProductMapper baseProductMapper;
+    private BaseProductDao baseProductDao;
 
-    @Override
-    public List<Integer> getIdList(String name, int status, String owner){
-        return baseProductMapper.getIdList(name, status, owner);
+    public boolean checkProductPermission(BaseProductVo baseProductVo) {
+        String operator = PermissionUtil.getOperatorBySessionID(baseProductVo.getSessionId());
+        return PermissionUtil.checkOperatorPermission(operator, baseProductVo.getId());
     }
 
+    private boolean productNameRepeat(String name) {
+        return baseProductDao.countName(name) != 0;
+    }
+
+    private boolean hasUndeletedModules(int productId) {
+        return baseProductDao.countUndeletedModule(productId) != 0;
+    }
 
     @Override
-    public String createProduct(BaseProductVo baseProductVo) {
+    public BaseProductResp getIdList(BaseProductInfoVo baseProductInfoVo) {
+        try {
+            List<Object> idList = baseProductDao.getIdList(baseProductInfoVo.getName(), baseProductInfoVo.getStatus());
+            return new BaseProductResp().success(idList);
+        } catch (Exception e) {
+            log.error(e.toString());
+            return new BaseProductResp().fail(-1, "get show product id failed", e.toString());
+        }
+    }
+
+    @Override
+    public BaseProductResp getProductInfoById(BaseProductInfoVo baseProductInfoVo) {
+        try {
+            List<Map<String, Object>> productInfoList = baseProductDao.getProductInfoById(baseProductInfoVo.getId());
+            // 将原map中的id抽离，作为剩下map的key
+            List<Map<String, Map<String, Object>>> formattedList = FormatUtil.formatInfoById(productInfoList);
+            return new BaseProductResp().success(formattedList);
+        } catch (Exception e) {
+            log.error(e.toString());
+            return new BaseProductResp().fail(-1, "get show product id failed", e.toString());
+        }
+    }
+
+    @Override
+    public BaseProductResp createProduct(BaseProductVo baseProductVo) {
+        // 重名校验
+        if (productNameRepeat(baseProductVo.getName())) {
+            return new BaseProductResp().fail(3, "product name is not unique", null);
+        }
 
         BaseProductDo baseProductDo = new BaseProductDo();
         baseProductDo.setName(baseProductVo.getName());
-        baseProductDo.setDesc(baseProductVo.getDesc());
-        baseProductDo.setCreateTime(new Date());
-        baseProductDo.setUpdateTime(new Date());
-        baseProductDo.setStatus(4);
+        baseProductDo.setDescription(baseProductVo.getDesc());
 
+        baseProductDo.setCreateTime(TimeUtil.getNowTs());
+        baseProductDo.setUpdateTime(TimeUtil.getNowTs());
+        baseProductDo.setStatus(4); // 默认待审核
+
+        // 获取创建人
         String sessionID = baseProductVo.getSessionId();
-        String operator = UserUtil.getOperatorBySessionID(sessionID);
+        String operator = PermissionUtil.getOperatorBySessionID(sessionID);
 
         baseProductDo.setCreator(operator);
-        baseProductDo.setOwner(operator);
-        baseProductDo.setAdmin(null);
+        baseProductDo.setOwner(Collections.singletonList(operator)); // Owner 默认为创建人，admin 为空
 
-        return String.valueOf(baseProductMapper.createProduct(baseProductDo));
+        try {
+            if (baseProductDao.createProduct(baseProductDo) == 1) {
+                return new BaseProductResp().success(null);
+            } else {
+                throw new Exception("failed insert data to database");
+            }
+        } catch (Exception e) {
+            log.error(e.toString());
+            return new BaseProductResp().fail(-1, "db insert error", e.toString());
+        }
     }
 
     @Override
-    public String updateProduct(BaseProductVo baseProductVo){
+    public BaseProductResp updateProduct(BaseProductVo baseProductVo) {
         BaseProductDo baseProductDo = new BaseProductDo();
 
+        // field-strategy 默认为 not_null 判断，即只更新和插入非NULL值（不包括非空值）
         baseProductDo.setUpdateTime(new Date());
+        baseProductDo.setId(baseProductVo.getId());
         baseProductDo.setName(baseProductVo.getName());
-        baseProductDo.setDesc(baseProductVo.getDesc());
+        baseProductDo.setDescription(baseProductVo.getDesc());
         baseProductDo.setStatus(baseProductVo.getStatus());
         baseProductDo.setOwner(baseProductVo.getOwner());
-        baseProductDo.setAdmin(null);
+        baseProductDo.setAdministrator(baseProductVo.getAdmin());
 
-        return "asa";
+        try {
+            if (baseProductDao.updateProduct(baseProductDo) == 1) {
+                return new BaseProductResp().success(null);
+            } else {
+                throw new Exception("failed update data in database");
+            }
+        } catch (Exception e) {
+            log.error(e.toString());
+            return new BaseProductResp().fail(-1, "db update error", e.toString());
+        }
     }
 
-    @Override
-    public boolean productNameRepeat(String name) {
-        return baseProductMapper.countName(name) != 0;
-    }
-
-    @Override
-    public boolean hasUndeletedModules(int productId) {
-        return baseProductMapper.countUndeletedModule(productId) != 0;
-    }
-
-
-    @Override
-    public String testInsert(BaseProductVo baseProductVo){
-        BaseProductDo baseProductDo = new BaseProductDo();
-        baseProductDo.setName(baseProductVo.getName());
-        return baseProductMapper.testInsert(baseProductDo);
-    }
 }

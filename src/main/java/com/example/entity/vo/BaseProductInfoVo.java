@@ -5,12 +5,10 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BaseProductVo{
-    private Integer id;
+public class BaseProductInfoVo {
+    private List<Integer> id;
     private String sessionId;
     private String name;
-    private String desc;
     private List<String> owner;
-    private List<String> admin;
     private Integer status;
 }

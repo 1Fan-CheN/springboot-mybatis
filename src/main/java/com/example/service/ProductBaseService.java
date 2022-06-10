@@ -1,23 +1,20 @@
 package com.example.service;
 
 import com.example.entity.sqldo.BaseProductDo;
+import com.example.entity.vo.BaseProductInfoVo;
+import com.example.entity.vo.BaseProductResp;
 import com.example.entity.vo.BaseProductVo;
 
 import java.util.List;
 
 public interface ProductBaseService {
 
-    List<Integer> getIdList(String name, int status, String owner);
+    BaseProductResp getIdList(BaseProductInfoVo baseProductInfoVo);
 
-    String createProduct(BaseProductVo baseProductVo);
+    BaseProductResp getProductInfoById(BaseProductInfoVo baseProductInfoVo);
 
-    String updateProduct(BaseProductVo baseProductVo);
+    BaseProductResp createProduct(BaseProductVo baseProductVo);
 
-    boolean productNameRepeat(String name);
-
-    boolean hasUndeletedModules(int productId);
-
-
-    String testInsert(BaseProductVo baseProductVo);
+    BaseProductResp updateProduct(BaseProductVo baseProductVo);
 
 }

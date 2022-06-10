@@ -1,14 +1,11 @@
 package com.example.controller;
 
+import com.example.entity.vo.BaseProductInfoVo;
 import com.example.entity.vo.BaseProductResp;
 import com.example.entity.vo.BaseProductVo;
-import com.example.service.PermissionService;
 import com.example.service.ProductBaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -18,81 +15,49 @@ import javax.annotation.Resource;
 public class ProductController {
 
     @Resource
-    private PermissionService permissionService;
-
-    @Resource
     private ProductBaseService productBaseService;
 
+    @PostMapping("show_list")
+    public BaseProductResp getProductIdList(@RequestBody BaseProductInfoVo baseProductInfoVo) {
+        log.info("getting product id list");
+        return productBaseService.getIdList(baseProductInfoVo);
+    }
+
+    @PostMapping("get_info")
+    public BaseProductResp getProductInfoById(@RequestBody BaseProductInfoVo baseProductInfoVo) {
+        log.info("getting product info list by id");
+        return productBaseService.getProductInfoById(baseProductInfoVo);
+    }
+
     @PostMapping("create")
-    public BaseProductResp CreateProduct(@RequestBody BaseProductVo baseProductVo) {
-        // 权限检查
-        if (!permissionService.checkProductPermission(baseProductVo)) {
-            return new BaseProductResp().fail(2, "no permission", null);
-        }
-        // 重名校验
-        if (productBaseService.productNameRepeat(baseProductVo.getName())) {
-            return new BaseProductResp().fail(3, "product name is not unique", null);
-        }
-
+    public BaseProductResp createProduct(@RequestBody BaseProductVo baseProductVo) {
         log.info("start create product");
-        try {
-            String id = productBaseService.createProduct(baseProductVo);
-            log.info(String.format("create product successfully, new product id: %s", id));
-            return new BaseProductResp().success(id);
-        } catch (Exception e) {
-            log.error(e.toString());
-            return new BaseProductResp().fail(-1, "db insert error", e.toString());
-        }
+        return productBaseService.createProduct(baseProductVo);
+    }
 
+    @PostMapping("update")
+    public BaseProductResp updateProduct(@RequestBody BaseProductVo baseProductVo) {
+        log.info("start update product");
+        return productBaseService.updateProduct(baseProductVo);
     }
 
     @PostMapping("offline")
-    public BaseProductResp OfflineProduct(@RequestBody BaseProductVo baseProductVo) {
-        // 权限检查
-        if (permissionService.checkProductPermission(baseProductVo)) {
-            return new BaseProductResp().fail(2, "no permission", null);
-        }
-        // 检查所有子模块是否下线
-        if (productBaseService.hasUndeletedModules(baseProductVo.getId())) {
-            return new BaseProductResp().fail(1, "not all modules offline", null);
-        }
-
+    public BaseProductResp offlineProduct(@RequestBody BaseProductVo baseProductVo) {
         log.info("start offline product");
-        try {
-            String id = productBaseService.createProduct(baseProductVo);
-            log.info(String.format("create product successfully, new product id: %s", id));
-            return new BaseProductResp().success(id);
-        } catch (Exception e) {
-            log.error(e.toString());
-            return new BaseProductResp().fail(-1, "db insert error", e.toString());
-        }
+        return productBaseService.updateProduct(baseProductVo);
     }
 
     @PostMapping("delete")
-    public BaseProductResp DeleteProduct(@RequestBody BaseProductVo baseProductVo) {
-        if (permissionService.checkProductPermission(baseProductVo)) {
-            return new BaseProductResp().fail(2, "no permission", null);
-        }
+    public BaseProductResp deleteProduct(@RequestBody BaseProductVo baseProductVo) {
         log.info("start delete product");
         return new BaseProductResp().success(null);
 
     }
 
-    @PostMapping("test")
+    @PostMapping("connect_test")
     public BaseProductResp Test(@RequestBody BaseProductVo baseProductVo) {
-        log.info("start delete product");
-        return new BaseProductResp().success(baseProductVo.getStatus());
-    }
-
-    @PostMapping("testInsert")
-    public BaseProductResp TestInsert(@RequestBody BaseProductVo baseProductVo) {
-        log.info("start delete product");
-        try{
-            return new BaseProductResp().success(productBaseService.testInsert(baseProductVo));
-        } catch (Exception e) {
-            log.error(e.toString());
-            return new BaseProductResp().fail(-1, "db insert error", e.toString());
-        }
+        log.info("connection OK");
+        return new BaseProductResp().success("data");
     }
 
 }
