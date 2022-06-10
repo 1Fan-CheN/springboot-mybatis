@@ -55,11 +55,22 @@ public class BaseProductDao {
         return baseModuleMapper.selectCount(lambdaWrapper);
     }
 
+    public int getProductStatus(int productId){
+        LambdaQueryWrapper<BaseProductDo> lambdaWrapper = new LambdaQueryWrapper<>();
+        lambdaWrapper.eq(BaseProductDo::getId, productId);
+        lambdaWrapper.select(BaseProductDo::getStatus);
+        return baseProductMapper.selectOne(lambdaWrapper).getStatus();
+    }
+
     public Integer createProduct(BaseProductDo baseProductDo){
         return baseProductMapper.insert(baseProductDo);
     }
 
     public Integer updateProduct(BaseProductDo baseProductDo){
+        return baseProductMapper.updateById(baseProductDo);
+    }
+
+    public int updateProductStatus(BaseProductDo baseProductDo){
         return baseProductMapper.updateById(baseProductDo);
     }
 

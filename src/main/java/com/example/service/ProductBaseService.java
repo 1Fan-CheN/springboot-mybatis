@@ -1,20 +1,21 @@
 package com.example.service;
 
-import com.example.entity.sqldo.BaseProductDo;
-import com.example.entity.vo.BaseProductInfoVo;
+import com.example.entity.vo.BaseProductMultiIdVo;
 import com.example.entity.vo.BaseProductResp;
-import com.example.entity.vo.BaseProductVo;
-
-import java.util.List;
+import com.example.entity.vo.BaseProductOneIdVo;
 
 public interface ProductBaseService {
 
-    BaseProductResp getIdList(BaseProductInfoVo baseProductInfoVo);
+    BaseProductResp getIdList(BaseProductMultiIdVo baseProductMultiIdVo);
 
-    BaseProductResp getProductInfoById(BaseProductInfoVo baseProductInfoVo);
+    BaseProductResp getProductInfoById(BaseProductMultiIdVo baseProductMultiIdVo);
 
-    BaseProductResp createProduct(BaseProductVo baseProductVo);
+    BaseProductResp createProduct(BaseProductOneIdVo baseProductVo);
 
-    BaseProductResp updateProduct(BaseProductVo baseProductVo);
+    BaseProductResp updateProduct(BaseProductOneIdVo baseProductVo);
+
+    BaseProductResp offlineProduct(BaseProductOneIdVo baseProductOneIdVo);
+
+    BaseProductResp deleteProduct(BaseProductOneIdVo baseProductOneIdVo);
 
 }

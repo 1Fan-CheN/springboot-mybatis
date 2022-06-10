@@ -6,7 +6,6 @@ import java.util.List;
 
 @Data
 public class BaseProductVo{
-    private Integer id;
     private String sessionId;
     private String name;
     private String desc;
