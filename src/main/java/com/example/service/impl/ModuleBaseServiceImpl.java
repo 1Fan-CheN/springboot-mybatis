@@ -2,13 +2,11 @@ package com.example.service.impl;
 
 import com.example.entity.sqldo.BaseModuleDo;
 import com.example.entity.vo.BaseModuleVo;
-import com.example.mapper.BaseModuleMapper;
 import com.example.service.ModuleBaseService;
 import com.example.utils.PermissionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Date;
 
 @Slf4j

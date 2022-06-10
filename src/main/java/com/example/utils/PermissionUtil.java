@@ -6,7 +6,8 @@ public class PermissionUtil {
         // TODO
         return "sa";
     }
-    public static boolean checkOperatorPermission(String operator, int productId){
+
+    public static boolean checkOperatorPermission(String operator, int productId) {
         return true;
     }
 }

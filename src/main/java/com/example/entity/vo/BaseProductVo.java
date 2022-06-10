@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BaseProductVo{
+public class BaseProductVo {
     private String sessionId;
     private String name;
     private String desc;

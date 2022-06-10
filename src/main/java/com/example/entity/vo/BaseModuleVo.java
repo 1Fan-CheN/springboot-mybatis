@@ -3,7 +3,7 @@ package com.example.entity.vo;
 import lombok.Data;
 
 @Data
-public class BaseModuleVo{
+public class BaseModuleVo {
     private Integer id;
     private String sessionId;
     private int productId;

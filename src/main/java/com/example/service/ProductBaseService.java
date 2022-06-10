@@ -1,8 +1,8 @@
 package com.example.service;
 
 import com.example.entity.vo.BaseProductMultiIdVo;
-import com.example.entity.vo.BaseProductResp;
 import com.example.entity.vo.BaseProductOneIdVo;
+import com.example.entity.vo.BaseProductResp;
 
 public interface ProductBaseService {
 

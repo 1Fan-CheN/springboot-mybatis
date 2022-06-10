@@ -9,7 +9,9 @@ import com.example.mapper.BaseProductMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class BaseProductDao {
@@ -27,6 +29,7 @@ public class BaseProductDao {
         map.put(BaseProductDo::getName, name);
         map.put(BaseProductDo::getStatus, status);
 
+        lambdaWrapper.ne(BaseProductDo::getStatus, 3); // 不展示已刪除的 product
         lambdaWrapper.allEq(map, false); // null2IsNull 设为 false 表示忽视入参为 null 的条件判断
 
         lambdaWrapper.orderByDesc(BaseProductDo::getUpdateTime);

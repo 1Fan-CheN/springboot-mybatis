@@ -1,8 +1,8 @@
 package com.example.controller;
 
 import com.example.entity.vo.BaseProductMultiIdVo;
-import com.example.entity.vo.BaseProductResp;
 import com.example.entity.vo.BaseProductOneIdVo;
+import com.example.entity.vo.BaseProductResp;
 import com.example.service.ProductBaseService;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,8 +46,8 @@ public class ProductController {
 
     }
 
-    @PostMapping("connect_test")
-    public BaseProductResp Test(@RequestBody BaseProductOneIdVo baseProductVo) {
+    @GetMapping("connect_test")
+    public BaseProductResp Test() {
         return new BaseProductResp().success("data");
     }
 

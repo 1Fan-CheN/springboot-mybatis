@@ -9,7 +9,7 @@ public class BaseProductResp {
     private int code;
     private Object data;
 
-    public BaseProductResp success(Object data){
+    public BaseProductResp success(Object data) {
         BaseProductResp resp = new BaseProductResp();
         resp.setCode(ModuleCode.SUCCESS.getCode());
         resp.setMsg(ModuleCode.SUCCESS.getMsg());
