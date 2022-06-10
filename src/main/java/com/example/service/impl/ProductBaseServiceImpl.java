@@ -26,27 +26,39 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Resource
     private BaseProductDao baseProductDao;
 
-    public boolean checkProductPermission(BaseProductOneIdVo baseProductOneIdVo) {
-        String operator = PermissionUtil.getOperatorBySessionID(baseProductOneIdVo.getSessionId());
-        return PermissionUtil.checkOperatorPermission(operator, baseProductOneIdVo.getId());
-    }
-
-    private boolean productNameRepeat(String name) {
-        return baseProductDao.countName(name) != 0;
-    }
-
-    private boolean hasUndeletedModules(int productId) {
-        return baseProductDao.countUndeletedModule(productId) != 0;
-    }
-
-    private boolean isProductOffline(int productId) {
-        return baseProductDao.getProductStatus(productId) == 3;
+    //TODO jia jianquan
+    @Override
+    public boolean checkProductPermission(String sessionId, int id) {
+        String operator = PermissionUtil.getOperatorBySessionID(sessionId);
+        return PermissionUtil.checkOperatorPermission(operator, id);
     }
 
     @Override
-    public BaseProductResp getIdList(BaseProductMultiIdVo baseProductMultiIdVo) {
+    public boolean productNameRepeat(String name) {
+        return baseProductDao.countName(name) != 0;
+    }
+
+    @Override
+    public int countUndeletedModules(int productId) {
+        return baseProductDao.countUndeletedModule(productId);
+    }
+
+    @Override
+    public int getProductStatus(int productId) {
+        return baseProductDao.getProductStatus(productId);
+    }
+
+    public void updateProductStatus(int productId, int status) {
+        BaseProductDo baseProductDo = new BaseProductDo();
+        baseProductDo.setId(productId);
+        baseProductDo.setStatus(status);
+        baseProductDao.updateProductStatus(baseProductDo);
+    }
+
+    @Override
+    public BaseProductResp listIds(BaseProductMultiIdVo baseProductMultiIdVo) {
         try {
-            List<Object> idList = baseProductDao.getIdList(baseProductMultiIdVo.getName(), baseProductMultiIdVo.getStatus());
+            List<Object> idList = baseProductDao.listIds(baseProductMultiIdVo.getName(), baseProductMultiIdVo.getStatus());
             return new BaseProductResp().success(idList);
         } catch (Exception e) {
             log.error(e.toString());
@@ -90,11 +102,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         baseProductDo.setOwner(Collections.singletonList(operator)); // Owner 默认为创建人，admin 为空
 
         try {
-            if (baseProductDao.createProduct(baseProductDo) == 1) {
-                return new BaseProductResp().success(null);
-            } else {
-                throw new Exception("failed insert data to database");
-            }
+            baseProductDao.createProduct(baseProductDo);
+            return new BaseProductResp().success(null);
         } catch (Exception e) {
             log.error(e.toString());
             return new BaseProductResp().fail(-1, "db insert error", e.toString());
@@ -115,11 +124,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         baseProductDo.setAdministrator(baseProductVo.getAdmin());
 
         try {
-            if (baseProductDao.updateProduct(baseProductDo) == 1) {
-                return new BaseProductResp().success(null);
-            } else {
-                throw new Exception("failed update data in database");
-            }
+            baseProductDao.updateProduct(baseProductDo);
+            return new BaseProductResp().success(null);
         } catch (Exception e) {
             log.error(e.toString());
             return new BaseProductResp().fail(-1, "db update error", e.toString());
@@ -130,17 +136,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     public BaseProductResp offlineProduct(BaseProductOneIdVo baseProductOneIdVo) {
         try {
             // TODO status enum
-            if (hasUndeletedModules(baseProductOneIdVo.getId())) {
+            if (countUndeletedModules(baseProductOneIdVo.getId()) != 0) {
                 return new BaseProductResp().fail(1, "has undeleted modules", null);
             }
-            BaseProductDo baseProductDo = new BaseProductDo();
-            baseProductDo.setId(baseProductOneIdVo.getId());
-            baseProductDo.setStatus(3);  // 已下线
-            if (baseProductDao.updateProductStatus(baseProductDo) == 1) {
-                return new BaseProductResp().success(null);
-            } else {
-                throw new Exception("fail.....");
-            }
+            int status = 3;
+            updateProductStatus(baseProductOneIdVo.getId(), status);
+            return new BaseProductResp().success(null);
         } catch (Exception e) {
             log.error(e.toString());
             return new BaseProductResp().fail(-1, "get show product id failed", e.toString());
@@ -150,18 +151,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Override
     public BaseProductResp deleteProduct(BaseProductOneIdVo baseProductOneIdVo) {
         try {
-            if (!isProductOffline(baseProductOneIdVo.getId())) {
+            if (getProductStatus(baseProductOneIdVo.getId()) != 3) {
                 // TODO jia yige error code
                 return new BaseProductResp().fail(1, "product doesn't offline", null);
             }
-            BaseProductDo baseProductDo = new BaseProductDo();
-            baseProductDo.setId(baseProductOneIdVo.getId());
-            baseProductDo.setStatus(2);
-            if (baseProductDao.updateProductStatus(baseProductDo) == 1) {
-                return new BaseProductResp().success(null);
-            } else {
-                throw new Exception("fail.....");
-            }
+            int status = 2;
+            updateProductStatus(baseProductOneIdVo.getId(), status);
+            return new BaseProductResp().success(null);
         } catch (Exception e) {
             log.error(e.toString());
             return new BaseProductResp().fail(-1, "get show product id failed", e.toString());

@@ -20,7 +20,7 @@ public class BaseProductDao {
     @Resource
     private BaseModuleMapper baseModuleMapper;
 
-    public List<Object> getIdList(String name, Integer status) {
+    public List<Object> listIds(String name, Integer status) {
         LambdaQueryWrapper<BaseProductDo> lambdaWrapper = new LambdaQueryWrapper<>();
 
         Map<SFunction<BaseProductDo, ?>, Object> map = new HashMap<>();
@@ -55,23 +55,23 @@ public class BaseProductDao {
         return baseModuleMapper.selectCount(lambdaWrapper);
     }
 
-    public int getProductStatus(int productId){
+    public int getProductStatus(int productId) {
         LambdaQueryWrapper<BaseProductDo> lambdaWrapper = new LambdaQueryWrapper<>();
         lambdaWrapper.eq(BaseProductDo::getId, productId);
         lambdaWrapper.select(BaseProductDo::getStatus);
         return baseProductMapper.selectOne(lambdaWrapper).getStatus();
     }
 
-    public Integer createProduct(BaseProductDo baseProductDo){
-        return baseProductMapper.insert(baseProductDo);
+    public void createProduct(BaseProductDo baseProductDo) {
+        baseProductMapper.insert(baseProductDo);
     }
 
-    public Integer updateProduct(BaseProductDo baseProductDo){
-        return baseProductMapper.updateById(baseProductDo);
+    public void updateProduct(BaseProductDo baseProductDo) {
+        baseProductMapper.updateById(baseProductDo);
     }
 
-    public int updateProductStatus(BaseProductDo baseProductDo){
-        return baseProductMapper.updateById(baseProductDo);
+    public void updateProductStatus(BaseProductDo baseProductDo) {
+        baseProductMapper.updateById(baseProductDo);
     }
 
 }

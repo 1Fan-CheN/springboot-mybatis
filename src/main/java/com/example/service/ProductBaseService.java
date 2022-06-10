@@ -6,7 +6,17 @@ import com.example.entity.vo.BaseProductOneIdVo;
 
 public interface ProductBaseService {
 
-    BaseProductResp getIdList(BaseProductMultiIdVo baseProductMultiIdVo);
+    boolean checkProductPermission(String sessionId, int Id);
+
+    boolean productNameRepeat(String name);
+
+    int countUndeletedModules(int productId);
+
+    int getProductStatus(int productId);
+
+    void updateProductStatus(int productId, int status);
+
+    BaseProductResp listIds(BaseProductMultiIdVo baseProductMultiIdVo);
 
     BaseProductResp getProductInfoById(BaseProductMultiIdVo baseProductMultiIdVo);
 
