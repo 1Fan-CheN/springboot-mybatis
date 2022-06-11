@@ -9,9 +9,7 @@ import com.example.mapper.BaseProductMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class BaseProductDao {
@@ -63,6 +61,18 @@ public class BaseProductDao {
         lambdaWrapper.eq(BaseProductDo::getId, productId);
         lambdaWrapper.select(BaseProductDo::getStatus);
         return baseProductMapper.selectOne(lambdaWrapper).getStatus();
+    }
+
+    public List<String> listAdminAndOwner(int productId) {
+        LambdaQueryWrapper<BaseProductDo> lambdaWrapper = new LambdaQueryWrapper<>();
+        lambdaWrapper.eq(BaseProductDo::getId, productId);
+        lambdaWrapper.select(BaseProductDo::getOwner, BaseProductDo::getAdministrator);
+        BaseProductDo selectResult = baseProductMapper.selectOne(lambdaWrapper);
+
+        List<String> resultList = new ArrayList<>();
+        resultList.addAll(selectResult.getOwner());
+        resultList.addAll(selectResult.getAdministrator());
+        return resultList;
     }
 
     public void createProduct(BaseProductDo baseProductDo) {

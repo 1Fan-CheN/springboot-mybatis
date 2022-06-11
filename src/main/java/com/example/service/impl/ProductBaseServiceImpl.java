@@ -6,6 +6,7 @@ import com.example.entity.vo.BaseProductMultiIdVo;
 import com.example.entity.vo.BaseProductOneIdVo;
 import com.example.entity.vo.BaseProductResp;
 import com.example.service.ProductBaseService;
+import com.example.utils.ConverseUtil;
 import com.example.utils.FormatUtil;
 import com.example.utils.PermissionUtil;
 import com.example.utils.TimeUtil;
@@ -13,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -27,9 +25,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     //TODO jia jianquan
     @Override
-    public boolean checkProductPermission(String sessionId, int id) {
+    public boolean checkProductPermission(String sessionId, int productId) {
         String operator = PermissionUtil.getOperatorBySessionID(sessionId);
-        return PermissionUtil.checkOperatorPermission(operator, id);
+        return baseProductDao.listAdminAndOwner(productId).contains(operator);
     }
 
     @Override
@@ -110,17 +108,20 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     @Override
-    public BaseProductResp updateProduct(BaseProductOneIdVo baseProductVo) {
+    public BaseProductResp updateProduct(BaseProductOneIdVo baseProductOneIdVo) {
+        if (!checkProductPermission(baseProductOneIdVo.getSessionId(), baseProductOneIdVo.getId())){
+            return new BaseProductResp().fail(2, "no permission to operate", null);
+        }
+        
         BaseProductDo baseProductDo = new BaseProductDo();
-
         // field-strategy 默认为 not_null 判断，即只更新和插入非NULL值（不包括非空值）
         baseProductDo.setUpdateTime(new Date());
-        baseProductDo.setId(baseProductVo.getId());
-        baseProductDo.setName(baseProductVo.getName());
-        baseProductDo.setDescription(baseProductVo.getDesc());
-        baseProductDo.setStatus(baseProductVo.getStatus());
-        baseProductDo.setOwner(baseProductVo.getOwner());
-        baseProductDo.setAdministrator(baseProductVo.getAdmin());
+        baseProductDo.setId(baseProductOneIdVo.getId());
+        baseProductDo.setName(baseProductOneIdVo.getName());
+        baseProductDo.setDescription(baseProductOneIdVo.getDesc());
+        baseProductDo.setStatus(baseProductOneIdVo.getStatus());
+        baseProductDo.setOwner(baseProductOneIdVo.getOwner());
+        baseProductDo.setAdministrator(baseProductOneIdVo.getAdmin());
 
         try {
             baseProductDao.updateProduct(baseProductDo);
@@ -133,6 +134,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Override
     public BaseProductResp offlineProduct(BaseProductOneIdVo baseProductOneIdVo) {
+        if (!checkProductPermission(baseProductOneIdVo.getSessionId(), baseProductOneIdVo.getId())){
+            return new BaseProductResp().fail(2, "no permission to operate", null);
+        }
         try {
             // TODO status enum
             if (countUndeletedModules(baseProductOneIdVo.getId()) != 0) {
@@ -149,6 +153,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Override
     public BaseProductResp deleteProduct(BaseProductOneIdVo baseProductOneIdVo) {
+        if (!checkProductPermission(baseProductOneIdVo.getSessionId(), baseProductOneIdVo.getId())){
+            return new BaseProductResp().fail(2, "no permission to operate", null);
+        }
         try {
             if (getProductStatus(baseProductOneIdVo.getId()) != 3) {
                 // TODO jia yige error code
