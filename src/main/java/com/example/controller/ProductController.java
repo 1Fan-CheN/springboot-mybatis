@@ -1,7 +1,7 @@
 package com.example.controller;
 
-import com.example.entity.vo.BaseProductMultiIdVo;
-import com.example.entity.vo.BaseProductOneIdVo;
+import com.example.entity.vo.ProductMultiIdVo;
+import com.example.entity.vo.ProductOneIdVo;
 import com.example.entity.vo.BaseProductResp;
 import com.example.service.ProductBaseService;
 import org.springframework.web.bind.annotation.*;
@@ -16,33 +16,33 @@ public class ProductController {
     private ProductBaseService productBaseService;
 
     @PostMapping("show_list")
-    public BaseProductResp getProductIdList(@RequestBody BaseProductMultiIdVo baseProductMultiIdVo) {
-        return productBaseService.listIds(baseProductMultiIdVo);
+    public BaseProductResp getProductIdList(@RequestBody ProductMultiIdVo productMultiIdVo) {
+        return productBaseService.listIds(productMultiIdVo);
     }
 
     @PostMapping("get_info")
-    public BaseProductResp getProductInfoById(@RequestBody BaseProductMultiIdVo baseProductMultiIdVo) {
-        return productBaseService.getProductInfoById(baseProductMultiIdVo);
+    public BaseProductResp getProductInfoById(@RequestBody ProductMultiIdVo productMultiIdVo) {
+        return productBaseService.getProductInfoById(productMultiIdVo);
     }
 
     @PostMapping("create")
-    public BaseProductResp createProduct(@RequestBody BaseProductOneIdVo baseProductVo) {
+    public BaseProductResp createProduct(@RequestBody ProductOneIdVo baseProductVo) {
         return productBaseService.createProduct(baseProductVo);
     }
 
     @PostMapping("update")
-    public BaseProductResp updateProduct(@RequestBody BaseProductOneIdVo baseProductVo) {
+    public BaseProductResp updateProduct(@RequestBody ProductOneIdVo baseProductVo) {
         return productBaseService.updateProduct(baseProductVo);
     }
 
     @PostMapping("offline")
-    public BaseProductResp offlineProduct(@RequestBody BaseProductOneIdVo baseProductOneIdVo) {
-        return productBaseService.offlineProduct(baseProductOneIdVo);
+    public BaseProductResp offlineProduct(@RequestBody ProductOneIdVo productOneIdVo) {
+        return productBaseService.offlineProduct(productOneIdVo);
     }
 
     @PostMapping("delete")
-    public BaseProductResp deleteProduct(@RequestBody BaseProductOneIdVo baseProductOneIdVo) {
-        return productBaseService.deleteProduct(baseProductOneIdVo);
+    public BaseProductResp deleteProduct(@RequestBody ProductOneIdVo productOneIdVo) {
+        return productBaseService.deleteProduct(productOneIdVo);
 
     }
 

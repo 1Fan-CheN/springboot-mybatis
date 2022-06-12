@@ -1,8 +1,8 @@
 package com.example.service;
 
-import com.example.entity.vo.BaseProductMultiIdVo;
-import com.example.entity.vo.BaseProductOneIdVo;
 import com.example.entity.vo.BaseProductResp;
+import com.example.entity.vo.ProductMultiIdVo;
+import com.example.entity.vo.ProductOneIdVo;
 
 public interface ProductBaseService {
 
@@ -16,16 +16,16 @@ public interface ProductBaseService {
 
     void updateProductStatus(int productId, int status);
 
-    BaseProductResp listIds(BaseProductMultiIdVo baseProductMultiIdVo);
+    BaseProductResp listIds(ProductMultiIdVo productMultiIdVo);
 
-    BaseProductResp getProductInfoById(BaseProductMultiIdVo baseProductMultiIdVo);
+    BaseProductResp getProductInfoById(ProductMultiIdVo productMultiIdVo);
 
-    BaseProductResp createProduct(BaseProductOneIdVo baseProductVo);
+    BaseProductResp createProduct(ProductOneIdVo baseProductVo);
 
-    BaseProductResp updateProduct(BaseProductOneIdVo baseProductVo);
+    BaseProductResp updateProduct(ProductOneIdVo baseProductVo);
 
-    BaseProductResp offlineProduct(BaseProductOneIdVo baseProductOneIdVo);
+    BaseProductResp offlineProduct(ProductOneIdVo productOneIdVo);
 
-    BaseProductResp deleteProduct(BaseProductOneIdVo baseProductOneIdVo);
+    BaseProductResp deleteProduct(ProductOneIdVo productOneIdVo);
 
 }

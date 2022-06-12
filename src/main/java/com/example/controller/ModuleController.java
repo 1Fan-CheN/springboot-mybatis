@@ -1,12 +1,15 @@
 package com.example.controller;
 
+import com.example.entity.vo.ModuleOneIdVo;
 import com.example.entity.vo.BaseModuleResp;
-import com.example.entity.vo.BaseModuleVo;
+import com.example.service.ModuleBaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 
 @Slf4j
@@ -14,16 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/module")
 public class ModuleController {
 
+    @Resource
+    private ModuleBaseService moduleBaseService;
+
     @PostMapping("create")
-    public BaseModuleResp CreateModule(@RequestBody BaseModuleVo request) {
-        log.info("testing...");
-        return new BaseModuleResp().success("success");
+    public BaseModuleResp CreateModule(@RequestBody ModuleOneIdVo moduleOneIdVo) {
+        return moduleBaseService.createModule(moduleOneIdVo);
     }
 
-    @PostMapping("offline")
-    public BaseModuleResp OfflineModule() {
-        log.info("testing222...");
-        return null;
+    @PostMapping("update")
+    public BaseModuleResp OfflineModule(@RequestBody ModuleOneIdVo moduleOneIdVo) {
+        return moduleBaseService.updateModule(moduleOneIdVo);
     }
 
     @PostMapping("delete")

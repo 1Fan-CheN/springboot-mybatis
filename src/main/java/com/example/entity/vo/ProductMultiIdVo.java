@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BaseProductMultiIdVo extends BaseProductVo {
+public class ProductMultiIdVo extends BaseProductVo {
     private List<Integer> id;
 }

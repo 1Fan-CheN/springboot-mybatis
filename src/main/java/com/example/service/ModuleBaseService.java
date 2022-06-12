@@ -1,10 +1,18 @@
 package com.example.service;
 
-import com.example.entity.vo.BaseModuleVo;
+import com.example.entity.vo.ModuleOneIdVo;
+import com.example.entity.vo.BaseModuleResp;
 
 public interface ModuleBaseService {
-    String createModule(BaseModuleVo baseModuleVo);
 
-    boolean moduleNameRepeat(String name, int productId);
+    boolean checkModulePermission(String sessionId, int moduleId);
+
+    boolean tokenRepeat(String token);
+
+    int getModuleStatus(Integer id);
+
+    BaseModuleResp createModule(ModuleOneIdVo moduleOneIdVo);
+
+    BaseModuleResp updateModule(ModuleOneIdVo moduleOneIdVo);
 
 }

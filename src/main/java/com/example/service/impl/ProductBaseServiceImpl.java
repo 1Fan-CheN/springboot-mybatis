@@ -2,11 +2,10 @@ package com.example.service.impl;
 
 import com.example.dao.BaseProductDao;
 import com.example.entity.sqldo.BaseProductDo;
-import com.example.entity.vo.BaseProductMultiIdVo;
-import com.example.entity.vo.BaseProductOneIdVo;
+import com.example.entity.vo.ProductMultiIdVo;
+import com.example.entity.vo.ProductOneIdVo;
 import com.example.entity.vo.BaseProductResp;
 import com.example.service.ProductBaseService;
-import com.example.utils.ConverseUtil;
 import com.example.utils.FormatUtil;
 import com.example.utils.PermissionUtil;
 import com.example.utils.TimeUtil;
@@ -53,9 +52,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     @Override
-    public BaseProductResp listIds(BaseProductMultiIdVo baseProductMultiIdVo) {
+    public BaseProductResp listIds(ProductMultiIdVo productMultiIdVo) {
         try {
-            List<Object> idList = baseProductDao.listIds(baseProductMultiIdVo.getName(), baseProductMultiIdVo.getStatus());
+            List<Object> idList = baseProductDao.listIds(productMultiIdVo.getName(), productMultiIdVo.getStatus());
             return new BaseProductResp().success(idList);
         } catch (Exception e) {
             log.error(e.toString());
@@ -64,9 +63,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     @Override
-    public BaseProductResp getProductInfoById(BaseProductMultiIdVo baseProductMultiIdVo) {
+    public BaseProductResp getProductInfoById(ProductMultiIdVo productMultiIdVo) {
         try {
-            List<Map<String, Object>> productInfoList = baseProductDao.getProductInfoById(baseProductMultiIdVo.getId());
+            List<Map<String, Object>> productInfoList = baseProductDao.getProductInfoById(productMultiIdVo.getId());
             // 将原map中的id抽离，作为剩下map的key
             List<Map<String, Map<String, Object>>> formattedList = FormatUtil.formatInfoById(productInfoList);
             return new BaseProductResp().success(formattedList);
@@ -77,22 +76,22 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     @Override
-    public BaseProductResp createProduct(BaseProductOneIdVo baseProductOneIdVo) {
+    public BaseProductResp createProduct(ProductOneIdVo productOneIdVo) {
         // 重名校验
-        if (productNameRepeat(baseProductOneIdVo.getName())) {
+        if (productNameRepeat(productOneIdVo.getName())) {
             return new BaseProductResp().fail(3, "product name is not unique", null);
         }
 
         BaseProductDo baseProductDo = new BaseProductDo();
-        baseProductDo.setName(baseProductOneIdVo.getName());
-        baseProductDo.setDescription(baseProductOneIdVo.getDesc());
+        baseProductDo.setName(productOneIdVo.getName());
+        baseProductDo.setDescription(productOneIdVo.getDesc());
 
         baseProductDo.setCreateTime(TimeUtil.getNowTs());
         baseProductDo.setUpdateTime(TimeUtil.getNowTs());
         baseProductDo.setStatus(4); // 默认待审核
 
         // 获取创建人
-        String sessionID = baseProductOneIdVo.getSessionId();
+        String sessionID = productOneIdVo.getSessionId();
         String operator = PermissionUtil.getOperatorBySessionID(sessionID);
 
         baseProductDo.setCreator(operator);
@@ -108,20 +107,20 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     @Override
-    public BaseProductResp updateProduct(BaseProductOneIdVo baseProductOneIdVo) {
-        if (!checkProductPermission(baseProductOneIdVo.getSessionId(), baseProductOneIdVo.getId())){
+    public BaseProductResp updateProduct(ProductOneIdVo productOneIdVo) {
+        if (!checkProductPermission(productOneIdVo.getSessionId(), productOneIdVo.getId())){
             return new BaseProductResp().fail(2, "no permission to operate", null);
         }
         
         BaseProductDo baseProductDo = new BaseProductDo();
         // field-strategy 默认为 not_null 判断，即只更新和插入非NULL值（不包括非空值）
         baseProductDo.setUpdateTime(new Date());
-        baseProductDo.setId(baseProductOneIdVo.getId());
-        baseProductDo.setName(baseProductOneIdVo.getName());
-        baseProductDo.setDescription(baseProductOneIdVo.getDesc());
-        baseProductDo.setStatus(baseProductOneIdVo.getStatus());
-        baseProductDo.setOwner(baseProductOneIdVo.getOwner());
-        baseProductDo.setAdministrator(baseProductOneIdVo.getAdmin());
+        baseProductDo.setId(productOneIdVo.getId());
+        baseProductDo.setName(productOneIdVo.getName());
+        baseProductDo.setDescription(productOneIdVo.getDesc());
+        baseProductDo.setStatus(productOneIdVo.getStatus());
+        baseProductDo.setOwner(productOneIdVo.getOwner());
+        baseProductDo.setAdministrator(productOneIdVo.getAdmin());
 
         try {
             baseProductDao.updateProduct(baseProductDo);
@@ -133,17 +132,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     @Override
-    public BaseProductResp offlineProduct(BaseProductOneIdVo baseProductOneIdVo) {
-        if (!checkProductPermission(baseProductOneIdVo.getSessionId(), baseProductOneIdVo.getId())){
+    public BaseProductResp offlineProduct(ProductOneIdVo productOneIdVo) {
+        if (!checkProductPermission(productOneIdVo.getSessionId(), productOneIdVo.getId())){
             return new BaseProductResp().fail(2, "no permission to operate", null);
         }
         try {
             // TODO status enum
-            if (countUndeletedModules(baseProductOneIdVo.getId()) != 0) {
+            if (countUndeletedModules(productOneIdVo.getId()) != 0) {
                 return new BaseProductResp().fail(1, "has undeleted modules", null);
             }
             int status = 3;
-            updateProductStatus(baseProductOneIdVo.getId(), status);
+            updateProductStatus(productOneIdVo.getId(), status);
             return new BaseProductResp().success(null);
         } catch (Exception e) {
             log.error(e.toString());
@@ -152,17 +151,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     @Override
-    public BaseProductResp deleteProduct(BaseProductOneIdVo baseProductOneIdVo) {
-        if (!checkProductPermission(baseProductOneIdVo.getSessionId(), baseProductOneIdVo.getId())){
+    public BaseProductResp deleteProduct(ProductOneIdVo productOneIdVo) {
+        if (!checkProductPermission(productOneIdVo.getSessionId(), productOneIdVo.getId())){
             return new BaseProductResp().fail(2, "no permission to operate", null);
         }
         try {
-            if (getProductStatus(baseProductOneIdVo.getId()) != 3) {
+            if (getProductStatus(productOneIdVo.getId()) != 3) {
                 // TODO jia yige error code
                 return new BaseProductResp().fail(1, "product doesn't offline", null);
             }
             int status = 2;
-            updateProductStatus(baseProductOneIdVo.getId(), status);
+            updateProductStatus(productOneIdVo.getId(), status);
             return new BaseProductResp().success(null);
         } catch (Exception e) {
             log.error(e.toString());
