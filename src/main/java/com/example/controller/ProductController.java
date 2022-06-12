@@ -16,7 +16,7 @@ public class ProductController {
     private ProductBaseService productBaseService;
 
     @PostMapping("show_list")
-    public BaseProductResp getProductIdList(@RequestBody ProductMultiIdVo productMultiIdVo) {
+    public BaseProductResp listProductIds(@RequestBody ProductMultiIdVo productMultiIdVo) {
         return productBaseService.listIds(productMultiIdVo);
     }
 

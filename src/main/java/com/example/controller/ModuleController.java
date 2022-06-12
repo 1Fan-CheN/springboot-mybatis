@@ -20,6 +20,11 @@ public class ModuleController {
     @Resource
     private ModuleBaseService moduleBaseService;
 
+    @PostMapping("show_list")
+    public BaseModuleResp listModulesId(@RequestBody ModuleOneIdVo moduleOneIdVo) {
+        return moduleBaseService.listModuleIds(moduleOneIdVo);
+    }
+
     @PostMapping("create")
     public BaseModuleResp CreateModule(@RequestBody ModuleOneIdVo moduleOneIdVo) {
         return moduleBaseService.createModule(moduleOneIdVo);
